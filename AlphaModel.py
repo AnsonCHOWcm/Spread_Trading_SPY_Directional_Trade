@@ -47,14 +47,14 @@ class SpreadSignal(AlphaModel):
 
         ratio = data[self.spread_asset[0]].Close / data[self.spread_asset[1]].Close
 
+        self.mean.Update( algorithm.Time , ratio )
+        self.std.Update( algorithm.Time , ratio )
+
         mean = self.mean.Current.Value
         std = self.std.Current.Value
 
         std_ratio = (ratio - mean)/std
-
-        self.mean.Update( algorithm.Time , ratio )
-        self.std.Update( algorithm.Time , ratio )
-
+        
         insights = []
 
         ## Generating the Trading Signal
@@ -156,13 +156,15 @@ class LongShortSignal(AlphaModel):
         self.VOO_last_price = data[self.spread_asset[0]].Close
         self.VTWO_last_price = data[self.spread_asset[1]].Close
 
+        self.mean.Update( algorithm.Time , ratio )
+        self.std.Update( algorithm.Time , ratio )
+
         mean = self.mean.Current.Value
         std = self.std.Current.Value
 
         std_ratio = (ratio - mean)/std
 
-        self.mean.Update( algorithm.Time , ratio )
-        self.std.Update( algorithm.Time , ratio )
+        
 
         insights = []
 
@@ -184,8 +186,8 @@ class LongShortSignal(AlphaModel):
             self.flag = new_flag
             if self.flag == "Hedge" : 
                 VTWO_market_beta = np.cov([x for x in self.VOO_ret] , [y for y in self.VTWO_ret])[0,1] / np.var([x for x in self.VOO_ret])
-                Blue_Chips_Weights = 0.9 * 1 / (1+VTWO_market_beta)
-                Small_Cap_Weights = 0.9 * VTWO_market_beta / (1+VTWO_market_beta)
+                Small_Cap_Weights = 0.9 * 1 / (1+VTWO_market_beta)
+                Blue_Chips_Weights = 0.9 * VTWO_market_beta / (1+VTWO_market_beta)
                 insights.append(Insight.Price(self.Blue_Chips_Hedge_asset , self.period ,InsightDirection.Up , weight = Blue_Chips_Weights))
                 insights.append(Insight.Price(self.Small_Cap_Long_asset , self.period ,InsightDirection.Up , weight = Small_Cap_Weights))
                 insights.append(Insight.Price(self.Normal_asset , self.period ,InsightDirection.Flat , weight = 0))
@@ -193,8 +195,8 @@ class LongShortSignal(AlphaModel):
                 insights.append(Insight.Price(self.Small_Cap_Hedge_asset , self.period ,InsightDirection.Flat , weight = 0))
             elif self.flag == "Long" : 
                 VTWO_market_beta = np.cov([x for x in self.VOO_ret] , [y for y in self.VTWO_ret])[0,1] / np.var([x for x in self.VOO_ret])
-                Blue_Chips_Weights = 0.9 * 1 / (1+VTWO_market_beta)
-                Small_Cap_Weights = 0.9 * VTWO_market_beta / (1+VTWO_market_beta)
+                Small_Cap_Weights = 0.9 * 1 / (1+VTWO_market_beta)
+                Blue_Chips_Weights = 0.9 * VTWO_market_beta / (1+VTWO_market_beta)
                 insights.append(Insight.Price(self.Blue_Chips_Hedge_asset , self.period ,InsightDirection.Flat , weight = 0))
                 insights.append(Insight.Price(self.Small_Cap_Long_asset , self.period ,InsightDirection.Flat , weight = 0))
                 insights.append(Insight.Price(self.Normal_asset , self.period ,InsightDirection.Flat , weight = 0))

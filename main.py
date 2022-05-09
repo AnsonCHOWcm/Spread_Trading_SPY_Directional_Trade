@@ -5,7 +5,7 @@ Created on Wed May  4 00:57:05 2022
 
 @author: ccm
 """
-# region import
+# region imports
 from AlgorithmImports import *
 from AlphaModel import * 
 # endregion
@@ -33,9 +33,9 @@ class SP500_R2000_Spread(QCAlgorithm):
         spread_asset = ["VOO" , "VTWO"]
         invest_asset_directional = ["SPXL" ,"VOO" , "SPXS" ]
         invest_asset_long_short = ["SPXL" , "SPXS" , "VOO" , "TNA" , "TZA"]
-        window = 15
+        window = 180
 
-        self.AddAlpha(SpreadSignal(spread_asset , invest_asset_directional , window))
+        self.AddAlpha(LongShortSignal(spread_asset , invest_asset_long_short , window))
 
         self.SetPortfolioConstruction(SignalAllocation())
 
